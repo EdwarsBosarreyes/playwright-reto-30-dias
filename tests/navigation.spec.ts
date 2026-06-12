@@ -20,6 +20,7 @@ test("Check left menu options", async ({ page }) => {
   }
 
   console.log(currentMenuItems);
+  console.log(currentMenuItems[0]);
 
   const expectedMenuItems = [
     "Admin",
@@ -37,4 +38,5 @@ test("Check left menu options", async ({ page }) => {
   ];
 
   expect(currentMenuItems).toEqual(expectedMenuItems);
+  expect(currentMenuItems[0]).toEqual(expectedMenuItems[0]);
 });
