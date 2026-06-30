@@ -10,6 +10,17 @@ test("Login to hrm", async ({ page }) => {
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
   await sidePanel.clicOnOption(SideMenuOption.BUZZ);
   await sidePanel.clicOnOption(SideMenuOption.DASHBOARD);
+
+  //1. Convirtiendo los valores del enum en un array de strings
+  const options = Object.values(SideMenuOption);
+  const randomIndex = Math.floor(Math.random() * options.length);
+  const randomOption = options[randomIndex] as SideMenuOption;
+  await sidePanel.searchText(randomOption);
+
+  const searchedLink = await page.getByRole("link", { name: randomOption });
+
+  await expect(searchedLink).toHaveText(randomOption);
+  await searchedLink.click();
 });
 
 test("Invalid login to hrm", async ({ page }) => {

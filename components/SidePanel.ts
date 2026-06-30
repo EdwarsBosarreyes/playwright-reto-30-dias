@@ -1,10 +1,12 @@
-import { Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 
 export class SidePanel {
   readonly page: Page;
+  readonly searchInput: Locator;
 
   constructor(page: Page) {
     this.page = page;
+    this.searchInput = page.getByRole("textbox", { name: "Search" });
   }
 
   private menuOption(option: SideMenuOption) {
@@ -13,6 +15,10 @@ export class SidePanel {
 
   async clicOnOption(option: SideMenuOption) {
     await this.menuOption(option).click();
+  }
+
+  async searchText(text: string) {
+    await this.searchInput.fill(text);
   }
 }
 
