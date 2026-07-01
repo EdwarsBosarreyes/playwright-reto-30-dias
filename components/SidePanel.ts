@@ -9,16 +9,22 @@ export class SidePanel {
     this.searchInput = page.getByRole("textbox", { name: "Search" });
   }
 
-  private menuOption(option: SideMenuOption) {
+  getMenuOptionLocator(option: SideMenuOption) {
     return this.page.getByRole("link", { name: option });
   }
 
   async clicOnOption(option: SideMenuOption) {
-    await this.menuOption(option).click();
+    await this.getMenuOptionLocator(option).click();
   }
 
   async searchText(text: string) {
     await this.searchInput.fill(text);
+  }
+
+  getRandomMenuOption(): SideMenuOption {
+    const options = Object.values(SideMenuOption);
+    const randomIndex = Math.floor(Math.random() * options.length);
+    return options[randomIndex] as SideMenuOption;
   }
 }
 

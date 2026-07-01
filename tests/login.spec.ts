@@ -2,30 +2,38 @@ import { expect, test } from "@playwright/test";
 import { LoginPage } from "../pageobjects/LoginPage";
 import { SideMenuOption, SidePanel } from "../components/SidePanel";
 
-test("Login to hrm", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.doLogin("Admin", "admin123");
+test.describe("HRM Login and Navigation Tests", () => {
+  let loginPage: LoginPage;
+  let sidePanel: SidePanel;
 
-  const sidePanel = new SidePanel(page);
-  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
-  await sidePanel.clicOnOption(SideMenuOption.BUZZ);
-  await sidePanel.clicOnOption(SideMenuOption.DASHBOARD);
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    sidePanel = new SidePanel(page);
+  });
 
-  //1. Convirtiendo los valores del enum en un array de strings
-  const options = Object.values(SideMenuOption);
-  const randomIndex = Math.floor(Math.random() * options.length);
-  const randomOption = options[randomIndex] as SideMenuOption;
-  await sidePanel.searchText(randomOption);
+  test("Login to hrm", async () => {
+    await loginPage.doLogin("Admin", "admin123");
 
-  const searchedLink = await page.getByRole("link", { name: randomOption });
+    await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+    await sidePanel.clicOnOption(SideMenuOption.BUZZ);
+    await sidePanel.clicOnOption(SideMenuOption.DASHBOARD);
+  });
 
-  await expect(searchedLink).toHaveText(randomOption);
-  await searchedLink.click();
-});
+  test("Invalid login to hrm", async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.doLogin("Admin", "admin1234");
 
-test("Invalid login to hrm", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.doLogin("Admin", "admin1234");
+    await expect(page.getByRole("alert")).toBeVisible();
+  });
 
-  await expect(page.getByRole("alert")).toBeVisible();
+  test("Search in the sidebar and clinking", async ({ page }) => {
+    await loginPage.doLogin("Admin", "admin123");
+
+    const randomOption = sidePanel.getRandomMenuOption();
+    await sidePanel.searchText(randomOption);
+
+    const searchedLink = sidePanel.getMenuOptionLocator(randomOption);
+    await expect(searchedLink).toHaveText(randomOption);
+    await searchedLink.click();
+  });
 });
