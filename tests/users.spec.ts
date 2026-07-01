@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { LoginPage } from "../pageobjects/LoginPage";
+import { getRandomElement } from "../src/utils/random";
 
 test("Get all the usernames registered", async ({ page }) => {
   const loginPage = new LoginPage(page);
@@ -84,9 +85,7 @@ test("Select random user for edition", async ({ page }) => {
     }
   }
 
-  const randomIndex = Math.floor(Math.random() * usernames.length);
-
-  const randomUsername = usernames[randomIndex];
+  const randomUsername = getRandomElement(usernames);
 
   const pencilToEdit = page
     .getByRole("table")

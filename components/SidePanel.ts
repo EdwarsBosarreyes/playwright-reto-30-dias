@@ -1,4 +1,5 @@
 import { Locator, Page } from "@playwright/test";
+import { getRandomElement } from "../src/utils/random";
 
 export class SidePanel {
   readonly page: Page;
@@ -23,8 +24,8 @@ export class SidePanel {
 
   getRandomMenuOption(): SideMenuOption {
     const options = Object.values(SideMenuOption);
-    const randomIndex = Math.floor(Math.random() * options.length);
-    return options[randomIndex] as SideMenuOption;
+
+    return getRandomElement(options) as SideMenuOption;
   }
 }
 

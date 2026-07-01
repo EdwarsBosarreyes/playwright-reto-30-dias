@@ -26,7 +26,7 @@ test.describe("HRM Login and Navigation Tests", () => {
     await expect(page.getByRole("alert")).toBeVisible();
   });
 
-  test("Search in the sidebar and clinking", async ({ page }) => {
+  test("Search in the sidebar and clinking", async () => {
     await loginPage.doLogin("Admin", "admin123");
 
     const randomOption = sidePanel.getRandomMenuOption();
