@@ -3,7 +3,7 @@ import { LoginPage } from "../pageobjects/LoginPage";
 
 test("Get all the employees registered", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  await loginPage.doLogin("Admin", "admin123");
+  await loginPage.loginAsAdmin();
 
   await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
 

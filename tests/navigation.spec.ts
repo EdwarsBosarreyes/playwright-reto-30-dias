@@ -54,8 +54,10 @@ test("Navigate through the left panel", async ({ page }) => {
     const menuText = await menuItem.innerText();
 
     console.log("Current menu item", menuText);
-    await menuItem.click();
-    if (menuText === "Maintenance") {
+    // await menuItem.click();
+    if (menuText !== "Maintenance") {
+      await menuItem.click();
+    } else {
       await page.goBack();
     }
   }

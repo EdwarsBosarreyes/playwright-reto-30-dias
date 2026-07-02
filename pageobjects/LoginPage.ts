@@ -1,4 +1,5 @@
 import { Locator, Page } from "@playwright/test";
+import { Environment } from "../config/Envinroment";
 
 export class LoginPage {
   readonly page: Page;
@@ -18,5 +19,9 @@ export class LoginPage {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
+  }
+
+  async loginAsAdmin() {
+    await this.doLogin(Environment.ADMIN_USERNAME, Environment.ADMIN_PASSWORD);
   }
 }

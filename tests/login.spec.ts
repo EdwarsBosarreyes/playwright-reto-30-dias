@@ -12,7 +12,7 @@ test.describe("HRM Login and Navigation Tests", () => {
   });
 
   test("Login to hrm", async () => {
-    await loginPage.doLogin("Admin", "admin123");
+    await loginPage.loginAsAdmin();
 
     await sidePanel.clicOnOption(SideMenuOption.ADMIN);
     await sidePanel.clicOnOption(SideMenuOption.BUZZ);
@@ -27,7 +27,7 @@ test.describe("HRM Login and Navigation Tests", () => {
   });
 
   test("Search in the sidebar and clinking", async () => {
-    await loginPage.doLogin("Admin", "admin123");
+    await loginPage.loginAsAdmin();
 
     const randomOption = sidePanel.getRandomMenuOption();
     await sidePanel.searchText(randomOption);
