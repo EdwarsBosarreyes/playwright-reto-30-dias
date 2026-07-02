@@ -24,4 +24,8 @@ export class LoginPage {
   async loginAsAdmin() {
     await this.doLogin(Environment.ADMIN_USERNAME, Environment.ADMIN_PASSWORD);
   }
+
+  async loginAsEmployee() {
+    await this.doLogin(Environment.EMPLOYEE_USERNAME, Environment.EMPLOYEE_PASSWORD);
+  }
 }

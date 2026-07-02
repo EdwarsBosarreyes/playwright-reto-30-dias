@@ -11,7 +11,7 @@ test.describe("HRM Login and Navigation Tests", () => {
     sidePanel = new SidePanel(page);
   });
 
-  test("Login to hrm", async () => {
+  test("Login to hrm as Admin", async () => {
     await loginPage.loginAsAdmin();
 
     await sidePanel.clicOnOption(SideMenuOption.ADMIN);
@@ -35,5 +35,10 @@ test.describe("HRM Login and Navigation Tests", () => {
     const searchedLink = sidePanel.getMenuOptionLocator(randomOption);
     await expect(searchedLink).toHaveText(randomOption);
     await searchedLink.click();
+  });
+
+  test("Login to HRM as Employee", async () => {
+    await loginPage.loginAsEmployee();
+    await expect(sidePanel.getMenuOptionLocator(SideMenuOption.ADMIN)).toBeHidden();
   });
 });
