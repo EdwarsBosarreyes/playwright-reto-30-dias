@@ -1,29 +1,33 @@
 import { Locator, Page } from "@playwright/test";
+import { SideMenuOption } from "../SidePanel";
 
 export class JobMenu {
   readonly page: Page;
   readonly job: Locator;
-  readonly jobTitleOption;
-  readonly payGradesOption;
 
   constructor(page: Page) {
     this.page = page;
     this.job = page.getByRole("navigation", { name: "Topbar Menu" }).getByText("Job");
-    this.jobTitleOption = page.getByRole("menuitem", { name: "Job Titles" });
-    this.payGradesOption = page.getByRole("menuitem", { name: "Pay Grades" });
+  }
+
+  getMenuOptionLocator(option: JobMenuOption) {
+    return this.page.getByRole("menuitem", { name: option });
   }
 
   private async clickOnJob() {
     await this.job.click();
   }
 
-  async clickOnJobTitles() {
+  async clickOnJobOption(option: JobMenuOption) {
     await this.clickOnJob();
-    await this.jobTitleOption.click();
+    await this.getMenuOptionLocator(option).click();
   }
+}
 
-  async clickOnPayGrades() {
-    await this.clickOnJob();
-    await this.payGradesOption.click();
-  }
+export enum JobMenuOption {
+  JOB_TITLES = "Job Titles",
+  PAY_GRADES = "Pay Grades",
+  EMPLOYMENT_STATUS = "Employment Status",
+  JOB_CATEGORIES = "Job Categories",
+  WORK_SHIFTS = "Work Shifts",
 }

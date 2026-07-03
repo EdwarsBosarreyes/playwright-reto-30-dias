@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 import { LoginPage } from "../pageobjects/LoginPage";
 import { TopBarMenu } from "../components/top-bar-menu/TopBarMenu";
 import { SideMenuOption, SidePanel } from "../components/SidePanel";
+import { JobMenuOption } from "../components/top-bar-menu/JobMenu";
+import { OrganizationMenuOption } from "../components/top-bar-menu/OrganizationMenu";
+import { QualificationsMenuOption } from "../components/top-bar-menu/QualificationsMenu";
 
 test("Check left menu options", async ({ page }) => {
   const loginPage = new LoginPage(page);
@@ -153,7 +156,7 @@ test("Check all the job links", async ({ page }) => {
   }
 });
 
-test("testing topbar menu", async ({ page }) => {
+test("testing User Management on topbar menu", async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.loginAsAdmin();
 
@@ -161,8 +164,54 @@ test("testing topbar menu", async ({ page }) => {
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
 
   const topBarMenu = new TopBarMenu(page);
-  await topBarMenu.job.clickOnJobTitles();
-  await topBarMenu.job.clickOnPayGrades();
 
   await topBarMenu.userManagement.clickOnUsers();
+});
+
+test("testing Job on topbar menu", async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.loginAsAdmin();
+
+  const sidePanel = new SidePanel(page);
+  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+  const topBarMenu = new TopBarMenu(page);
+
+  const jobMenuOptions = Object.values(JobMenuOption);
+
+  for (const jobOption of jobMenuOptions) {
+    await topBarMenu.job.clickOnJobOption(jobOption);
+  }
+});
+
+test("testing Organization on topbar menu", async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.loginAsAdmin();
+
+  const sidePanel = new SidePanel(page);
+  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+  const topBarMenu = new TopBarMenu(page);
+
+  const organizationMenuOptions = Object.values(OrganizationMenuOption);
+
+  for (const organizationOption of organizationMenuOptions) {
+    await topBarMenu.organization.clickOnOrganizationOption(organizationOption);
+  }
+});
+
+test("testing Qualifications on topbar menu", async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.loginAsAdmin();
+
+  const sidePanel = new SidePanel(page);
+  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+  const topBarMenu = new TopBarMenu(page);
+
+  const qualificationsMenuOptions = Object.values(QualificationsMenuOption);
+
+  for (const qualificationsOption of qualificationsMenuOptions) {
+    await topBarMenu.qualifications.clickOnQualificationOption(qualificationsOption);
+  }
 });
