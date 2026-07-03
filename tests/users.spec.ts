@@ -1,12 +1,15 @@
 import { expect, test } from "@playwright/test";
 import { LoginPage } from "../pageobjects/LoginPage";
 import { getRandomElement } from "../src/utils/random";
+import { SideMenuOption, SidePanel } from "../components/SidePanel";
 
 test.describe("HRM Login", () => {
   let loginPage: LoginPage;
+  let sidePanel: SidePanel;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
+    sidePanel = new SidePanel(page);
   });
 
   test("Get all the usernames registered", async ({ page }) => {
@@ -109,5 +112,35 @@ test.describe("HRM Login", () => {
     expect(page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")).toHaveValue(
       currentUsername,
     );
+  });
+
+  test("check user role options", async ({ page }) => {
+    const expectedRoleOptions = ["-- Select --", "Admin", "ESS"];
+    await loginPage.loginAsAdmin();
+    await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+    await page.locator("//label[contains(.,'User Role')]/parent::div/following-sibling::div").click();
+    const currentUserRoleOptions = await page.getByRole("listbox").getByRole("option").allInnerTexts();
+
+    console.log(currentUserRoleOptions);
+    expect(
+      currentUserRoleOptions,
+      "The options displayed in the User Role Dropdown do not match the expected options",
+    ).toEqual(expectedRoleOptions);
+  });
+
+  test("check status options", async ({ page }) => {
+    const expectedStatusOptions = ["-- Select --", "Enabled", "Disabled"];
+    await loginPage.loginAsAdmin();
+    await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+    await page.locator("//label[contains(.,'Status')]/parent::div/following-sibling::div").click();
+    const currentStatusOptions = await page.getByRole("listbox").getByRole("option").allInnerTexts();
+
+    console.log(currentStatusOptions);
+    expect(
+      currentStatusOptions,
+      "The options displayed in the User Role Dropdown do not match the expected options",
+    ).toEqual(expectedStatusOptions);
   });
 });
