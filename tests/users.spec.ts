@@ -143,4 +143,115 @@ test.describe("HRM Login", () => {
       "The options displayed in the User Role Dropdown do not match the expected options",
     ).toEqual(expectedStatusOptions);
   });
+
+  test("Filter by user admin", async ({ page }) => {
+    await loginPage.loginAsAdmin();
+    await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+    const allBodyRows = page.getByRole("table").getByRole("rowgroup").nth(1).getByRole("row");
+
+    //Filas que contienen el role admin
+    const currentAdminRows = allBodyRows.filter({
+      has: page.getByRole("cell").nth(2).getByText("Admin"),
+    });
+
+    const expectedAdminCount = await currentAdminRows.count();
+    console.log("Admin users before filtering", expectedAdminCount);
+
+    //Apliying filter
+    await page.locator("//label[contains(.,'User Role')]/parent::div/following-sibling::div").click();
+    await page.getByRole("listbox").getByRole("option", { name: "Admin" }).click();
+    await page.getByRole("button", { name: "Search" }).click();
+
+    //The table should have exactly the same number of items as expected
+    await expect(allBodyRows).toHaveCount(expectedAdminCount);
+
+    for (let i = 0; i < expectedAdminCount; i++) {
+      await expect(allBodyRows.nth(i).getByRole("cell").nth(2)).toContainText("Admin");
+    }
+
+    // Convertimos el Locator en un array de Locators individuales usando .all()
+    //const rows = await allBodyRows.all();
+
+    // for (const row of rows) {
+    //   await expect(row.getByRole("cell").nth(2)).toContainText("Admin");
+    // }
+  });
+
+  test("Filter by user admin v2", async ({ page }) => {
+    await loginPage.loginAsAdmin();
+    await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+    const allBodyRows = page.getByRole("table").getByRole("rowgroup").nth(1).getByRole("row");
+
+    //Filas que contienen el role admin
+    const currentAdminRows = allBodyRows.filter({
+      has: page.getByRole("cell").nth(2).getByText("Admin"),
+    });
+
+    const expectedAdminCount = await currentAdminRows.count();
+    console.log("Admin users before filtering", expectedAdminCount);
+
+    //Apliying filter
+    await page.locator("//label[contains(.,'User Role')]/parent::div/following-sibling::div").click();
+    await page.getByRole("listbox").getByRole("option", { name: "Admin" }).click();
+    await page.getByRole("button", { name: "Search" }).click();
+
+    //The table should have exactly the same number of items as expected
+    await expect(allBodyRows).toHaveCount(expectedAdminCount);
+
+    // Convertimos el Locator en un array de Locators individuales usando .all()
+    const rows = await allBodyRows.all();
+
+    for (const row of rows) {
+      await expect(row.getByRole("cell").nth(2)).toContainText("Admin");
+    }
+  });
+
+  test("Filter by user admin v3", async ({ page }) => {
+    await loginPage.loginAsAdmin();
+    await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+    // 1. Identificamos el contenedor del cuerpo de la tabla
+    const tableBody = page.getByRole("table").getByRole("rowgroup").nth(1);
+
+    // Filtramos las filas que tienen "Admin" en la tercera columna (:nth-child(3))
+    const currentAdminRows = tableBody.getByRole("row").filter({
+      has: page.locator("td:nth-child(3), [role='cell']:nth-child(3)").getByText("Admin", { exact: true }),
+    });
+
+    // Esperamos a que la tabla cargue
+    await currentAdminRows.first().waitFor({ state: "visible" });
+
+    // 2. EXTRAEMOS TODOS LOS USERNAMES PRE-FILTRO
+    // Usamos :nth-child(2) para extraer la segunda celda de CADA una de las filas filtradas
+    const expectedUsernames = await currentAdminRows
+      .locator("td:nth-child(2), [role='cell']:nth-child(2)")
+      .allTextContents();
+    const cleanedExpectedUsernames = expectedUsernames.map((name) => name.trim()).filter(Boolean);
+
+    console.log("Usernames esperados (Antes del filtro):", cleanedExpectedUsernames);
+
+    // 3. APLICAMOS EL FILTRO EN LA UI
+    await page.locator("//label[contains(.,'User Role')]/parent::div/following-sibling::div").click();
+    await page.getByRole("listbox").getByRole("option", { name: "Admin" }).click();
+    await page.getByRole("button", { name: "Search" }).click();
+
+    // 4. ESPERAMOS A QUE LA TABLA SE ACTUALICE
+    // 'networkidle' puede ser inestable si hay peticiones en bucle.
+    // Una mejor alternativa es esperar a que la red se calme o usar un pequeño delay de renderizado:
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(500); // Pequeño respiro para que el DOM se redibuje con los nuevos datos
+
+    // 5. EXTRAEMOS LOS USERNAMES POST-FILTRO
+    // Ahora todas las celdas visibles en la columna 2 deberían ser Admin
+    const filteredCells = tableBody.locator("tr td:nth-child(2), [role='row'] [role='cell']:nth-child(2)");
+    const actualUsernames = await filteredCells.allTextContents();
+    const cleanedActualUsernames = actualUsernames.map((name) => name.trim()).filter(Boolean);
+
+    console.log("Usernames obtenidos (Después del filtro):", cleanedActualUsernames);
+
+    // 6. LA ASERCIÓN
+    expect(cleanedActualUsernames).toEqual(cleanedExpectedUsernames);
+  });
 });
