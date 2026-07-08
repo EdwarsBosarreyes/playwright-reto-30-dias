@@ -31,8 +31,6 @@ test("Search in the sidebar and clinking", async ({ page }) => {
 });
 
 test("Login to HRM as Employee", async ({ page }) => {
-  const loginPage = new LoginPage(page);
   const sidePanel = new SidePanel(page);
-  //await loginPage.loginAsEmployee();
   await expect(sidePanel.getMenuOptionLocator(SideMenuOption.ADMIN)).toBeHidden();
 });

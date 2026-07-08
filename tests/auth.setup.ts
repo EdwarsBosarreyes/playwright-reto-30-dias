@@ -17,7 +17,7 @@ setup("aunthtentication as admin", async ({ page }) => {
   console.log("Authentication completed using setup");
 });
 
-/*setup("aunthtentication as employee", async ({ page }) => {
+/* setup("aunthtentication as employee", async ({ page }) => {
   console.log("Authetication started using setup");
 
   //Login
@@ -25,7 +25,7 @@ setup("aunthtentication as admin", async ({ page }) => {
   await loginPage.loginAsEmployee();
 
   //Assert for successfull login
-  await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Leave" })).toBeVisible();
 
   //Save status
   await page.context().storageState({ path: ".auth/employee.json" });
