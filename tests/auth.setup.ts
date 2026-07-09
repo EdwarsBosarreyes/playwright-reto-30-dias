@@ -1,7 +1,7 @@
 import { test as setup, expect } from "@playwright/test";
 import { LoginPage } from "../pageobjects/LoginPage";
 
-setup("aunthtentication as admin", async ({ page }) => {
+setup("aunthentication as admin", async ({ page }) => {
   console.log("Authetication started using setup");
 
   //Login
