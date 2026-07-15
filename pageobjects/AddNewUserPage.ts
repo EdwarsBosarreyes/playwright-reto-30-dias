@@ -1,81 +1,100 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 export class AddNewUserPage {
   private readonly page: Page;
+  private readonly addButton: Locator;
+  private readonly roleDropdown: Locator;
+  private readonly employeeNameInput: Locator;
+  private readonly employeeNameOption: Locator;
+  private readonly statusDropdown: Locator;
+  private readonly usernameInput: Locator;
+  private readonly passwordInput: Locator;
+  private readonly confirmPassword: Locator;
+  private readonly saveButton: Locator;
+  private readonly successSaveMessage: Locator;
+  private readonly unmatchPasswordsErrorMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
-  }
-
-  async clickOnAdd() {
-    await this.page.getByText("Add").click();
-  }
-
-  async selectUserRole(userRole: string) {
-    await this.page
+    this.addButton = page.getByText("Add");
+    this.roleDropdown = page
       .locator("div.oxd-grid-item--gutters")
       .filter({
         has: this.page.getByText("User Role"),
       })
-      .locator("div.oxd-select-text-input")
-      .click();
+      .locator("div.oxd-select-text-input");
+    this.employeeNameInput = page.getByRole("textbox", { name: "Type for hints..." });
+    this.employeeNameOption = page.getByText("Qwerty Qwerty LName", { exact: true });
+    this.statusDropdown = page
+      .locator("div.oxd-grid-item--gutters")
+      .filter({
+        has: page.getByText("Status"),
+      })
+      .locator("div.oxd-select-text-input");
+    this.usernameInput = page
+      .locator("div.oxd-grid-item--gutters")
+      .filter({
+        has: this.page.getByText("Username"),
+      })
+      .getByRole("textbox");
+    this.passwordInput = page
+      .locator("div.oxd-grid-item--gutters")
+      .filter({
+        has: this.page.getByText("Password", { exact: true }),
+      })
+      .getByRole("textbox");
+    this.confirmPassword = page
+      .locator("div.oxd-grid-item--gutters")
+      .filter({
+        has: this.page.getByText("Confirm Password", { exact: true }),
+      })
+      .getByRole("textbox");
+    this.saveButton = page.getByRole("button", { name: "Save" });
+    this.successSaveMessage = page.locator("p.oxd-text--toast-message");
+    this.unmatchPasswordsErrorMessage = page.locator("span.oxd-input-field-error-message");
+  }
 
-    await this.page.getByText(userRole, { exact: true }).click();
+  async clickOnAdd() {
+    await this.addButton.click();
+  }
+
+  async selectUserRole(roleName: string) {
+    await this.roleDropdown.click();
+    await this.page.getByText(roleName, { exact: true }).click();
   }
 
   async selectEmployeeName(employeeName: string) {
-    await this.page.getByRole("textbox", { name: "Type for hints..." }).fill(employeeName);
-
-    await this.page.getByText("Qwerty Qwerty LName", { exact: true }).click();
+    await this.employeeNameInput.fill(employeeName);
+    await this.employeeNameOption.click();
   }
 
   async selectStatus(status: string) {
-    await this.page
-      .locator("div.oxd-grid-item--gutters")
-      .filter({
-        has: this.page.getByText("Status"),
-      })
-      .locator("div.oxd-select-text-input")
-      .click();
+    await this.statusDropdown.click();
 
     await this.page.getByText(status).click();
   }
 
   async enterUsername(username: string) {
-    await this.page
-      .locator("div.oxd-grid-item--gutters")
-      .filter({
-        has: this.page.getByText("Username"),
-      })
-      .getByRole("textbox")
-      .fill(username);
+    await this.usernameInput.fill(username);
   }
 
   async enterPassword(password: string) {
-    await this.page
-      .locator("div.oxd-grid-item--gutters")
-      .filter({
-        has: this.page.getByText("Password", { exact: true }),
-      })
-      .getByRole("textbox")
-      .fill(password);
+    await this.passwordInput.fill(password);
   }
 
   async enterConfirmPassword(password: string) {
-    await this.page
-      .locator("div.oxd-grid-item--gutters")
-      .filter({
-        has: this.page.getByText("Confirm Password", { exact: true }),
-      })
-      .getByRole("textbox")
-      .fill(password);
+    await this.confirmPassword.fill(password);
   }
 
   async clickOnSave() {
-    await this.page.getByRole("button", { name: "Save" }).click();
+    await this.saveButton.click();
   }
 
   async checkUserWasAddedMessage() {
-    await expect(this.page.locator("p.oxd-text--toast-message")).toHaveText("Successfully Saved");
+    await expect(this.successSaveMessage).toHaveText("Successfully Saved");
+  }
+
+  async checkUnmatchPasswordsMessage() {
+    await expect(this.unmatchPasswordsErrorMessage).toHaveText("Passwords do not match");
   }
 }

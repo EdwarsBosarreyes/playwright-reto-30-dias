@@ -272,62 +272,19 @@ test("Add new user different confirm password", async ({ page }) => {
   const password = "Random45..*";
   const employeeToSearch = "Qwerty LName";
 
-  await page.goto("/web/index.php/dashboard/index");
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
   const sidePanel = new SidePanel(page);
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
 
-  /* const topBarMenu = new TopBarMenu(page);
-  await topBarMenu.userManagement.clickOnUsers(); */
-
-  await page.getByText("Add").click();
-
-  await page
-    .locator("div.oxd-grid-item--gutters")
-    .filter({
-      has: page.getByText("User Role"),
-    })
-    .locator("div.oxd-select-text-input")
-    .click();
-
-  await page.getByText("ESS", { exact: true }).click();
-
-  await page.getByRole("textbox", { name: "Type for hints..." }).fill(employeeToSearch);
-  await page.getByText("Qwerty Qwerty LName", { exact: true }).click();
-
-  await page
-    .locator("div.oxd-grid-item--gutters")
-    .filter({
-      has: page.getByText("Status"),
-    })
-    .locator("div.oxd-select-text-input")
-    .click();
-
-  await page.getByText("Enabled").click();
-
-  await page
-    .locator("div.oxd-grid-item--gutters")
-    .filter({
-      has: page.getByText("Username"),
-    })
-    .getByRole("textbox")
-    .fill(randomUsername);
-
-  await page
-    .locator("div.oxd-grid-item--gutters")
-    .filter({
-      has: page.getByText("Password", { exact: true }),
-    })
-    .getByRole("textbox")
-    .fill(password);
-
-  await page
-    .locator("div.oxd-grid-item--gutters")
-    .filter({
-      has: page.getByText("Confirm Password", { exact: true }),
-    })
-    .getByRole("textbox")
-    .fill(password + "1234");
-
-  await expect(page.locator("span.oxd-input-field-error-message")).toHaveText("Passwords do not match");
+  const addNewUserPage = new AddNewUserPage(page);
+  await addNewUserPage.clickOnAdd();
+  await addNewUserPage.selectUserRole("ESS");
+  await addNewUserPage.selectEmployeeName(employeeToSearch);
+  await addNewUserPage.selectStatus("Enabled");
+  await addNewUserPage.enterUsername(randomUsername);
+  await addNewUserPage.enterPassword(password);
+  await addNewUserPage.enterConfirmPassword(password + "12345");
+  await addNewUserPage.checkUnmatchPasswordsMessage();
 });
