@@ -1,4 +1,5 @@
 import { expect, Locator, Page } from "@playwright/test";
+import { UserModel } from "../models/UserModel";
 
 export class AddNewUserPage {
   private readonly page: Page;
@@ -96,5 +97,16 @@ export class AddNewUserPage {
 
   async checkUnmatchPasswordsMessage() {
     await expect(this.unmatchPasswordsErrorMessage).toHaveText("Passwords do not match");
+  }
+
+  async addNewUser(user: UserModel) {
+    await this.clickOnAdd();
+    await this.selectUserRole(user.role);
+    await this.selectEmployeeName(user.employee);
+    await this.selectStatus(user.status);
+    await this.enterUsername(user.username);
+    await this.enterPassword(user.password);
+    await this.enterConfirmPassword(user.confirmePassword);
+    await this.clickOnSave();
   }
 }
