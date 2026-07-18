@@ -5,6 +5,7 @@ import { TopBarMenu } from "../components/top-bar-menu/TopBarMenu";
 import { Navigate } from "../pageobjects/Navigate";
 import { AddNewUserPage } from "../pageobjects/AddNewUserPage";
 import { UserModel } from "../models/UserModel";
+import { UserFactory } from "../factory/UserFactory";
 
 test("Get all the usernames registered", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
@@ -243,9 +244,8 @@ test("Filter by user admin v3", async ({ page }) => {
 });
 
 test("Add new user", async ({ page }) => {
-  const randomUsername = "goku" + crypto.randomUUID();
-  const password = "Random45..*";
-  const employeeToSearch = "Qwerty LName";
+  //const employeeToSearch = "Qwerty";
+  const employeeToSearch = "manda";
 
   const navigate = new Navigate(page);
   await navigate.toDashboard();
@@ -256,24 +256,28 @@ test("Add new user", async ({ page }) => {
   /* const topBarMenu = new TopBarMenu(page);
   await topBarMenu.userManagement.clickOnUsers(); */
 
-  const userToAdd: UserModel = {
+  /* const userToAdd: UserModel = {
     username: randomUsername,
     employee: employeeToSearch,
     password: password,
     confirmePassword: password,
     role: "ESS",
     status: "Enabled",
-  };
+  }; */
+
+  const adminUser = UserFactory.createAdmin({
+    role: "Admin",
+    employee: employeeToSearch,
+  });
 
   const addNewUserPage = new AddNewUserPage(page);
-  await addNewUserPage.addNewUser(userToAdd);
+  await addNewUserPage.addNewUser(adminUser);
   await addNewUserPage.checkUserWasAddedMessage();
 });
 
 test("Add new user invalid confirm password", async ({ page }) => {
-  const randomUsername = "goku" + crypto.randomUUID();
   const password = "Random45..*";
-  const employeeToSearch = "Qwerty LName";
+  const employeeToSearch = "Qwerty";
 
   const navigate = new Navigate(page);
   await navigate.toDashboard();
@@ -281,16 +285,32 @@ test("Add new user invalid confirm password", async ({ page }) => {
   const sidePanel = new SidePanel(page);
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
 
-  const userToAdd: UserModel = {
-    username: randomUsername,
+  const adminUser = UserFactory.createAdmin({
     employee: employeeToSearch,
-    password: password,
-    confirmePassword: password + "321",
-    role: "ESS",
-    status: "Enabled",
-  };
+    confirmePassword: password,
+  });
 
   const addNewUserPage = new AddNewUserPage(page);
-  await addNewUserPage.addNewUser(userToAdd);
+  await addNewUserPage.addNewUser(adminUser);
   await addNewUserPage.checkUnmatchPasswordsMessage();
+});
+
+test("Add disabled new admin user", async ({ page }) => {
+  const employeeToSearch = "manda";
+
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
+
+  const sidePanel = new SidePanel(page);
+  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+  const adminUser = UserFactory.createAdmin({
+    role: "Admin",
+    employee: employeeToSearch,
+    status: "Disabled",
+  });
+
+  const addNewUserPage = new AddNewUserPage(page);
+  await addNewUserPage.addNewUser(adminUser);
+  await addNewUserPage.checkUserWasAddedMessage();
 });

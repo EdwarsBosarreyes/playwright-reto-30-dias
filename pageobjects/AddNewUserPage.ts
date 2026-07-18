@@ -6,7 +6,6 @@ export class AddNewUserPage {
   private readonly addButton: Locator;
   private readonly roleDropdown: Locator;
   private readonly employeeNameInput: Locator;
-  private readonly employeeNameOption: Locator;
   private readonly statusDropdown: Locator;
   private readonly usernameInput: Locator;
   private readonly passwordInput: Locator;
@@ -25,7 +24,6 @@ export class AddNewUserPage {
       })
       .locator("div.oxd-select-text-input");
     this.employeeNameInput = page.getByRole("textbox", { name: "Type for hints..." });
-    this.employeeNameOption = page.getByText("Qwerty Qwerty LName", { exact: true });
     this.statusDropdown = page
       .locator("div.oxd-grid-item--gutters")
       .filter({
@@ -61,12 +59,14 @@ export class AddNewUserPage {
 
   async selectUserRole(roleName: string) {
     await this.roleDropdown.click();
-    await this.page.getByText(roleName, { exact: true }).click();
+    //await this.page.getByText(roleName, { exact: true }).click();
+    await this.page.getByRole("option", { name: roleName }).click();
   }
 
   async selectEmployeeName(employeeName: string) {
     await this.employeeNameInput.fill(employeeName);
-    await this.employeeNameOption.click();
+    // await this.page.getByRole("option", { name: "Qwerty Qwerty LName" }).click();
+    await this.page.getByRole("option", { name: new RegExp(employeeName) }).click();
   }
 
   async selectStatus(status: string) {
