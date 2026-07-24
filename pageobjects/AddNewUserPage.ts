@@ -65,8 +65,8 @@ export class AddNewUserPage {
 
   async selectEmployeeName(employeeName: string) {
     await this.employeeNameInput.fill(employeeName);
-    // await this.page.getByRole("option", { name: "Qwerty Qwerty LName" }).click();
-    await this.page.getByRole("option", { name: new RegExp(employeeName) }).click();
+    await this.page.getByRole("option", { name: employeeName }).click();
+    //await this.page.getByRole("option", { name: new RegExp(employeeName) }).click();
   }
 
   async selectStatus(status: string) {
@@ -108,5 +108,12 @@ export class AddNewUserPage {
     await this.enterPassword(user.password);
     await this.enterConfirmPassword(user.confirmePassword);
     await this.clickOnSave();
+  }
+
+  async getEmployeeName(): Promise<string> {
+    const fullUserToSearch = await this.page.getByRole("textbox", { name: "Type for hints..." }).inputValue();
+    console.log(`User to search ${fullUserToSearch}`);
+
+    return fullUserToSearch;
   }
 }

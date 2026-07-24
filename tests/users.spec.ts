@@ -6,6 +6,7 @@ import { Navigate } from "../pageobjects/Navigate";
 import { AddNewUserPage } from "../pageobjects/AddNewUserPage";
 import { UserModel } from "../models/UserModel";
 import { UserFactory } from "../factory/UserFactory";
+import { UsersTable } from "../components/UsersTable";
 
 test("Get all the usernames registered", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
@@ -243,7 +244,7 @@ test("Filter by user admin v3", async ({ page }) => {
   expect(cleanedActualUsernames).toEqual(cleanedExpectedUsernames);
 });
 
-test("Add new user", async ({ page }) => {
+test("Add new user admin", async ({ page }) => {
   //const employeeToSearch = "Qwerty";
   const employeeToSearch = "manda";
 
@@ -312,5 +313,65 @@ test("Add disabled new admin user", async ({ page }) => {
 
   const addNewUserPage = new AddNewUserPage(page);
   await addNewUserPage.addNewUser(adminUser);
+  await addNewUserPage.checkUserWasAddedMessage();
+});
+
+test("Add new user admin2 V2", async ({ page }) => {
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
+
+  const sidePanel = new SidePanel(page);
+  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+  const usersTable = new UsersTable(page);
+  await usersTable.editFirstAdminOnTable();
+
+  const addNewUserPage = new AddNewUserPage(page);
+  const fullUserToSearch = await addNewUserPage.getEmployeeName();
+
+  const adminUser = UserFactory.createAdmin({
+    role: "Admin",
+    employee: fullUserToSearch,
+  });
+
+  await page.goBack();
+  await addNewUserPage.addNewUser(adminUser);
+  await addNewUserPage.checkUserWasAddedMessage();
+});
+
+test("Add new user employee", async ({ page }) => {
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
+
+  const sidePanel = new SidePanel(page);
+  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+  const allBodyRows = page.getByRole("table").getByRole("rowgroup").nth(1).getByRole("row");
+
+  //Filas que contienen el role ESS
+  const currentAdminRows = allBodyRows.filter({
+    has: page.getByRole("cell").nth(2).getByText("ESS"),
+  });
+
+  const firstEmployeeToSearch = currentAdminRows.nth(0);
+
+  await expect(firstEmployeeToSearch, "No admin users found in the table").toHaveCount(1);
+
+  await firstEmployeeToSearch
+    .locator("button")
+    .filter({ has: page.locator("i.bi-pencil-fill") })
+    .click();
+
+  const fullUserToSearch = await page.getByRole("textbox", { name: "Type for hints..." }).inputValue();
+  console.log(`User to search ${fullUserToSearch}`);
+
+  const employeeUser = UserFactory.createAdmin({
+    role: "ESS",
+    employee: fullUserToSearch,
+  });
+
+  await page.goBack();
+  const addNewUserPage = new AddNewUserPage(page);
+  await addNewUserPage.addNewUser(employeeUser);
   await addNewUserPage.checkUserWasAddedMessage();
 });
