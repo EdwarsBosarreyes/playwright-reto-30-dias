@@ -10,6 +10,27 @@ export class UsersTable {
     return this.page.getByRole("table").getByRole("rowgroup").nth(1).getByRole("row");
   }
 
+  async getAllUsernames(): Promise<string[]> {
+    const rows = this.getAllBodyRows();
+
+    const usernames: string[] = [];
+
+    const rowCount = await rows.count();
+
+    for (let i = 0; i < rowCount; i++) {
+      const cell = rows.nth(i).getByRole("cell").nth(1);
+      const username = await cell.textContent();
+
+      if (username) {
+        usernames.push(username);
+      }
+    }
+
+    console.log(usernames);
+
+    return usernames;
+  }
+
   private getAdminRows(): Locator {
     const allBodyRows = this.getAllBodyRows();
     //Filas que contienen el role admin

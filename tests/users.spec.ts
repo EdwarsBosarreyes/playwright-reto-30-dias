@@ -1,35 +1,21 @@
 import { expect, test } from "@playwright/test";
 import { getRandomElement } from "../src/utils/random";
 import { SideMenuOption, SidePanel } from "../components/SidePanel";
-import { TopBarMenu } from "../components/top-bar-menu/TopBarMenu";
+
 import { Navigate } from "../pageobjects/Navigate";
 import { AddNewUserPage } from "../pageobjects/AddNewUserPage";
-import { UserModel } from "../models/UserModel";
 import { UserFactory } from "../factory/UserFactory";
 import { UsersTable } from "../components/UsersTable";
 
 test("Get all the usernames registered", async ({ page }) => {
-  await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
-  await page.getByRole("link", { name: "Admin" }).click();
-  await page.getByRole("navigation", { name: "Topbar Menu" }).getByText("User Management").click();
-  await page.getByRole("menuitem", { name: "Users" }).click();
+  const sidePanel = new SidePanel(page);
+  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
 
-  const rows = page.getByRole("table").getByRole("row");
-  const usernames: string[] = [];
-
-  const rowCount = await rows.count();
-
-  for (let i = 1; i < rowCount; i++) {
-    const cell = rows.nth(i).getByRole("cell").nth(1);
-    const username = await cell.textContent();
-
-    if (username) {
-      usernames.push(username);
-    }
-  }
-
-  console.log(usernames);
+  const usersTable = new UsersTable(page);
+  await usersTable.getAllUsernames();
 });
 
 test("Select specific user for edition", async ({ page }) => {
