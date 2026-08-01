@@ -56,4 +56,25 @@ export class UsersTable {
       .filter({ has: this.page.locator("i.bi-pencil-fill") })
       .click();
   }
+
+  async clickOnDeleteActionByUsername(username: string) {
+    const allBodyRows = this.getAllBodyRows();
+
+    const filteredRowsByUsername = allBodyRows.filter({
+      has: this.page.getByRole("cell").nth(1).getByText(username),
+    });
+
+    expect(filteredRowsByUsername, `No rows contain username: ${username} were found`).toHaveCount(1);
+
+    await filteredRowsByUsername
+      .locator("button")
+      .filter({
+        has: this.page.locator("i.bi-trash"),
+      })
+      .click();
+  }
+
+  async acceptDeleteUser() {
+    await this.page.getByRole("button", { name: /Yes, Delete/ }).click();
+  }
 }

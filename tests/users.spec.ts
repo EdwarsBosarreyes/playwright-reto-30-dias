@@ -304,10 +304,7 @@ test("Add disabled new admin user", async ({ page }) => {
 
 test("Add new user admin2 V2", async ({ page }) => {
   const navigate = new Navigate(page);
-  await navigate.toDashboard();
-
-  const sidePanel = new SidePanel(page);
-  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+  await navigate.toUsers();
 
   const usersTable = new UsersTable(page);
   await usersTable.editFirstAdminOnTable();
@@ -360,4 +357,32 @@ test("Add new user employee", async ({ page }) => {
   const addNewUserPage = new AddNewUserPage(page);
   await addNewUserPage.addNewUser(employeeUser);
   await addNewUserPage.checkUserWasAddedMessage();
+});
+
+test("Delete user admin", async ({ page }) => {
+  //Arrange
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
+
+  const usersTable = new UsersTable(page);
+  await usersTable.editFirstAdminOnTable();
+
+  const addNewUserPage = new AddNewUserPage(page);
+  const fullUserToSearch = await addNewUserPage.getEmployeeName();
+
+  const adminUser = UserFactory.createAdmin({
+    role: "Admin",
+    employee: fullUserToSearch,
+  });
+
+  await page.goBack();
+  await addNewUserPage.addNewUser(adminUser);
+  await addNewUserPage.checkUserWasAddedMessage();
+
+  //Act
+  await usersTable.clickOnDeleteActionByUsername(adminUser.username);
+  await usersTable.acceptDeleteUser();
+
+  //Assert
+  await addNewUserPage.checkUserWasSuccessfullyDeletedMessage();
 });

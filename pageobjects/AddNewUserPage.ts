@@ -95,6 +95,10 @@ export class AddNewUserPage {
     await expect(this.successSaveMessage).toHaveText("Successfully Saved");
   }
 
+  async checkUserWasSuccessfullyDeletedMessage() {
+    await expect(this.successSaveMessage).toHaveText("Successfully Deleted", { timeout: 30_000 });
+  }
+
   async checkUnmatchPasswordsMessage() {
     await expect(this.unmatchPasswordsErrorMessage).toHaveText("Passwords do not match");
   }
@@ -111,6 +115,7 @@ export class AddNewUserPage {
   }
 
   async getEmployeeName(): Promise<string> {
+    await expect(this.page.getByRole("textbox", { name: "Type for hints..." })).toHaveValue(/\s/);
     const fullUserToSearch = await this.page.getByRole("textbox", { name: "Type for hints..." }).inputValue();
     console.log(`User to search ${fullUserToSearch}`);
 
