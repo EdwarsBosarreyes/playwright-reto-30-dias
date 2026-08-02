@@ -77,4 +77,18 @@ export class UsersTable {
   async acceptDeleteUser() {
     await this.page.getByRole("button", { name: /Yes, Delete/ }).click();
   }
+
+  async confirmUserWasRemovedFromTable(username: string): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          const usernames = await this.getAllUsernames();
+          return usernames;
+        },
+        {
+          message: `The user: ${username} has not been deleted`,
+        },
+      )
+      .not.toContain(username);
+  }
 }

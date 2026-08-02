@@ -385,4 +385,5 @@ test("Delete user admin", async ({ page }) => {
 
   //Assert
   await addNewUserPage.checkUserWasSuccessfullyDeletedMessage();
+  await usersTable.confirmUserWasRemovedFromTable(adminUser.username);
 });
