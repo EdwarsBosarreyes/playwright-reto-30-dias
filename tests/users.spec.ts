@@ -387,3 +387,31 @@ test("Delete user admin", async ({ page }) => {
   await addNewUserPage.checkUserWasSuccessfullyDeletedMessage();
   await usersTable.confirmUserWasRemovedFromTable(adminUser.username);
 });
+
+test("Cancel delete of user admin", async ({ page }) => {
+  //Arrange
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
+
+  const usersTable = new UsersTable(page);
+  await usersTable.editFirstAdminOnTable();
+
+  const addNewUserPage = new AddNewUserPage(page);
+  const fullUserToSearch = await addNewUserPage.getEmployeeName();
+
+  const adminUser = UserFactory.createAdmin({
+    role: "Admin",
+    employee: fullUserToSearch,
+  });
+
+  await page.goBack();
+  await addNewUserPage.addNewUser(adminUser);
+  await addNewUserPage.checkUserWasAddedMessage();
+
+  //Act
+  await usersTable.clickOnDeleteActionByUsername(adminUser.username);
+  await usersTable.cancelDeleteUser();
+
+  //Assert
+  await usersTable.confirmUserIsOnTable(adminUser.username);
+});

@@ -78,6 +78,10 @@ export class UsersTable {
     await this.page.getByRole("button", { name: /Yes, Delete/ }).click();
   }
 
+  async cancelDeleteUser() {
+    await this.page.getByRole("button", { name: /No, Cancel/ }).click;
+  }
+
   async confirmUserWasRemovedFromTable(username: string): Promise<void> {
     await expect
       .poll(
@@ -90,5 +94,10 @@ export class UsersTable {
         },
       )
       .not.toContain(username);
+  }
+
+  async confirmUserIsOnTable(username: string): Promise<void> {
+    const userLocator = this.page.getByRole("cell").getByText(username);
+    await expect(userLocator, `The user: ${username} is not present on table`).toBeVisible();
   }
 }
