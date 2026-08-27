@@ -83,17 +83,19 @@ export class UsersTable {
   }
 
   async confirmUserWasRemovedFromTable(username: string): Promise<void> {
-    await expect
-      .poll(
-        async () => {
-          const usernames = await this.getAllUsernames();
-          return usernames;
-        },
-        {
-          message: `The user: ${username} has not been deleted`,
-        },
-      )
-      .not.toContain(username);
+    // await expect
+    //   .poll(
+    //     async () => {
+    //       const usernames = await this.getAllUsernames();
+    //       return usernames;
+    //     },
+    //     {
+    //       message: `The user: ${username} has not been deleted`,
+    //     },
+    //   )
+    //   .not.toContain(username);
+    const userLocator = this.page.getByRole("cell").getByText(username);
+    await expect(userLocator, `The user: ${username} is present on table`).not.toBeVisible();
   }
 
   async confirmUserIsOnTable(username: string): Promise<void> {
