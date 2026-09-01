@@ -92,9 +92,9 @@ test("Select random user for edition", async ({ page }) => {
 
 test("check user role options", async ({ page }) => {
   const expectedRoleOptions = ["-- Select --", "Admin", "ESS"];
-  const sidePanel = new SidePanel(page);
 
-  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
 
   await page.locator("//label[contains(.,'User Role')]/parent::div/following-sibling::div").click();
   const currentUserRoleOptions = await page.getByRole("listbox").getByRole("option").allInnerTexts();
@@ -108,9 +108,9 @@ test("check user role options", async ({ page }) => {
 
 test("check status options", async ({ page }) => {
   const expectedStatusOptions = ["-- Select --", "Enabled", "Disabled"];
-  const sidePanel = new SidePanel(page);
 
-  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
 
   await page.locator("//label[contains(.,'Status')]/parent::div/following-sibling::div").click();
   const currentStatusOptions = await page.getByRole("listbox").getByRole("option").allInnerTexts();
