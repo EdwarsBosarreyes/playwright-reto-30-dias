@@ -19,13 +19,10 @@ test("Get all the usernames registered", async ({ page }) => {
 });
 
 test("Select specific user for edition", async ({ page }) => {
-  const userForEdition = "FMLName1";
+  const userForEdition = "TestSpacesHrm";
 
-  await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
-
-  await page.getByRole("link", { name: "Admin" }).click();
-  await page.getByRole("navigation", { name: "Topbar Menu" }).getByText("User Management").click();
-  await page.getByRole("menuitem", { name: "Users" }).click();
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
 
   const pencilToEdit = page
     .getByRole("table")
@@ -48,11 +45,8 @@ test("Select specific user for edition", async ({ page }) => {
 });
 
 test("Select random user for edition", async ({ page }) => {
-  await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
-
-  await page.getByRole("link", { name: "Admin" }).click();
-  await page.getByRole("navigation", { name: "Topbar Menu" }).getByText("User Management").click();
-  await page.getByRole("menuitem", { name: "Users" }).click();
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
 
   const rows = page.getByRole("table").getByRole("row");
   const usernames: string[] = [];
@@ -79,13 +73,19 @@ test("Select random user for edition", async ({ page }) => {
 
   await pencilToEdit.click();
 
+  // const usernameInput = await page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input");
+
   const currentUsername = await page
     .locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")
     .inputValue();
 
+  // await usernameInput.waitFor({ state: "visible" });
+
+  // const currentUsername = await usernameInput.inputValue();
+
   expect(currentUsername).toEqual(randomUsername);
 
-  expect(page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")).toHaveValue(
+  await expect(page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")).toHaveValue(
     currentUsername,
   );
 });
@@ -230,7 +230,7 @@ test("Filter by user admin v3", async ({ page }) => {
   expect(cleanedActualUsernames).toEqual(cleanedExpectedUsernames);
 });
 
-test("capture all amounts", async ({ page }) => {
+test("capture all amounts @slow", async ({ page }) => {
   await page.goto("/web/index.php/claim/viewAssignClaim");
 
   const allBodyRows = page.getByRole("table").getByRole("rowgroup").nth(1).getByRole("row");
@@ -262,7 +262,15 @@ test("capture all amounts", async ({ page }) => {
     total += amount;
   }
 
-  console.log("Total is: ", total);
+  console.log("Total is: ", total.toFixed(2));
+
+  const average = total / rowCount;
+  const max = Math.max(...amounts);
+  const min = Math.min(...amounts);
+
+  console.log("The average is: ", average.toFixed(2));
+  console.log("The maximum is: ", max);
+  console.log("The minimum is: ", min);
 });
 
 test("Add new user admin", async ({ page }) => {
@@ -394,7 +402,7 @@ test("Add new user employee", async ({ page }) => {
   await addNewUserPage.checkUserWasAddedMessage();
 });
 
-test("Delete user admin @users", async ({ page }) => {
+test("Delete user admin @users @slow", async ({ page }) => {
   //Arrange
   const navigate = new Navigate(page);
   await navigate.toUsers();
