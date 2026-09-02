@@ -122,8 +122,8 @@ test("check status options", async ({ page }) => {
 });
 
 test("Filter by user admin", async ({ page }) => {
-  const sidePanel = new SidePanel(page);
-  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
 
   const allBodyRows = page.getByRole("table").getByRole("rowgroup").nth(1).getByRole("row");
 
@@ -156,8 +156,8 @@ test("Filter by user admin", async ({ page }) => {
 });
 
 test("Filter by user admin v2", async ({ page }) => {
-  const sidePanel = new SidePanel(page);
-  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
 
   const allBodyRows = page.getByRole("table").getByRole("rowgroup").nth(1).getByRole("row");
 
@@ -186,8 +186,8 @@ test("Filter by user admin v2", async ({ page }) => {
 });
 
 test("Filter by user admin v3", async ({ page }) => {
-  const sidePanel = new SidePanel(page);
-  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+  const navigate = new Navigate(page);
+  await navigate.toUsers();
 
   // 1. Identificamos el contenedor del cuerpo de la tabla
   const tableBody = page.getByRole("table").getByRole("rowgroup").nth(1);
