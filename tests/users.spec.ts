@@ -283,9 +283,6 @@ test("Add new user admin", async ({ page }) => {
   const sidePanel = new SidePanel(page);
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
 
-  /* const topBarMenu = new TopBarMenu(page);
-  await topBarMenu.userManagement.clickOnUsers(); */
-
   /* const userToAdd: UserModel = {
     username: randomUsername,
     employee: employeeToSearch,
