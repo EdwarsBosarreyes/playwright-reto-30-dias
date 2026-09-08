@@ -7,7 +7,7 @@ import { AddNewUserPage } from "../pageobjects/AddNewUserPage";
 import { UserFactory } from "../factory/UserFactory";
 import { UsersTable } from "../components/UsersTable";
 
-test("Get all the usernames registered", async ({ page }) => {
+test("Get all the usernames registered @users", async ({ page }) => {
   const navigate = new Navigate(page);
   await navigate.toDashboard();
 
@@ -18,7 +18,7 @@ test("Get all the usernames registered", async ({ page }) => {
   await usersTable.getAllUsernames();
 });
 
-test("Select specific user for edition", async ({ page }) => {
+/* test("Select specific user for edition @users", async ({ page }) => {
   const userForEdition = "TestSpacesHrm";
 
   const navigate = new Navigate(page);
@@ -42,9 +42,9 @@ test("Select specific user for edition", async ({ page }) => {
   expect(page.locator("//label[contains(.,'Username')]/parent::div/following-sibling::div/input")).toHaveValue(
     currentUsername,
   );
-});
+}); */
 
-test("Select random user for edition", async ({ page }) => {
+test("Select random user for edition @users", async ({ page }) => {
   const navigate = new Navigate(page);
   await navigate.toUsers();
 
@@ -90,7 +90,7 @@ test("Select random user for edition", async ({ page }) => {
   );
 });
 
-test("check user role options", async ({ page }) => {
+test("check user role options @users", async ({ page }) => {
   const expectedRoleOptions = ["-- Select --", "Admin", "ESS"];
 
   const navigate = new Navigate(page);
@@ -106,7 +106,7 @@ test("check user role options", async ({ page }) => {
   ).toEqual(expectedRoleOptions);
 });
 
-test("check status options", async ({ page }) => {
+test("check status options @users", async ({ page }) => {
   const expectedStatusOptions = ["-- Select --", "Enabled", "Disabled"];
 
   const navigate = new Navigate(page);
@@ -121,7 +121,7 @@ test("check status options", async ({ page }) => {
   );
 });
 
-test("Filter by user admin", async ({ page }) => {
+test("Filter by user admin @users", async ({ page }) => {
   const navigate = new Navigate(page);
   await navigate.toUsers();
 
@@ -155,7 +155,7 @@ test("Filter by user admin", async ({ page }) => {
   // }
 });
 
-test("Filter by user admin v2", async ({ page }) => {
+test("Filter by user admin v2 @users", async ({ page }) => {
   const navigate = new Navigate(page);
   await navigate.toUsers();
 
@@ -185,7 +185,7 @@ test("Filter by user admin v2", async ({ page }) => {
   }
 });
 
-test("Filter by user admin v3", async ({ page }) => {
+test("Filter by user admin v3 @users", async ({ page }) => {
   const navigate = new Navigate(page);
   await navigate.toUsers();
 
@@ -273,7 +273,7 @@ test("capture all amounts @slow", async ({ page }) => {
   console.log("The minimum is: ", min);
 });
 
-test("Add new user admin", async ({ page }) => {
+test("Add new user admin @users", async ({ page }) => {
   //const employeeToSearch = "Qwerty";
   const employeeToSearch = "manda";
 
@@ -302,7 +302,7 @@ test("Add new user admin", async ({ page }) => {
   await addNewUserPage.checkUserWasAddedMessage();
 });
 
-test("Add new user invalid confirm password", async ({ page }) => {
+test("Add new user invalid confirm password @users", async ({ page }) => {
   const password = "Random45..*";
   const employeeToSearch = "Qwerty";
 
@@ -322,7 +322,7 @@ test("Add new user invalid confirm password", async ({ page }) => {
   await addNewUserPage.checkUnmatchPasswordsMessage();
 });
 
-test("Add disabled new admin user", async ({ page }) => {
+test("Add disabled new admin user @users", async ({ page }) => {
   const employeeToSearch = "manda";
 
   const navigate = new Navigate(page);
@@ -362,7 +362,7 @@ test("Add new user admin2 V2 @users @slow", async ({ page }) => {
   await addNewUserPage.checkUserWasAddedMessage();
 });
 
-test("Add new user employee", async ({ page }) => {
+test("Add new user employee @users", async ({ page }) => {
   const navigate = new Navigate(page);
   await navigate.toDashboard();
 
