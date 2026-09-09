@@ -5,14 +5,13 @@ import { SideMenuOption, SidePanel } from "../components/SidePanel";
 import { JobMenuOption } from "../components/top-bar-menu/JobMenu";
 import { OrganizationMenuOption } from "../components/top-bar-menu/OrganizationMenu";
 import { QualificationsMenuOption } from "../components/top-bar-menu/QualificationsMenu";
+import { Navigate } from "../pageobjects/Navigate";
 
 test("Check left menu options", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.doLogin("Admin", "admin123");
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
-  await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
-
-  const leftMenuItems = page.getByLabel("Sidepanel").getByRole("listitem");
+  const leftMenuItems = await page.getByLabel("Sidepanel").getByRole("listitem");
   const currentMenuItemsCount = await leftMenuItems.count();
   console.log("Current Menu Items count", currentMenuItemsCount);
 
@@ -46,10 +45,8 @@ test("Check left menu options", async ({ page }) => {
 });
 
 test("Navigate through the left panel", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.doLogin("Admin", "admin123");
-
-  await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
   const leftMenuItems = page.getByLabel("Sidepanel").getByRole("listitem");
   const currentMenuItemsCount = await leftMenuItems.count();
@@ -92,10 +89,8 @@ test("Check all the qualification links", async ({ page }) => {
     },
   ];
 
-  const loginPage = new LoginPage(page);
-  await loginPage.doLogin("Admin", "admin123");
-
-  await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
   await page.getByRole("link", { name: "Admin" }).click();
 
@@ -136,8 +131,8 @@ test("Check all the job links", async ({ page }) => {
     },
   ];
 
-  const loginPage = new LoginPage(page);
-  await loginPage.doLogin("Admin", "admin123");
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
   await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
 
@@ -157,8 +152,8 @@ test("Check all the job links", async ({ page }) => {
 });
 
 test("testing User Management on topbar menu", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.loginAsAdmin();
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
   const sidePanel = new SidePanel(page);
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
@@ -169,8 +164,8 @@ test("testing User Management on topbar menu", async ({ page }) => {
 });
 
 test("testing Job on topbar menu", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.loginAsAdmin();
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
   const sidePanel = new SidePanel(page);
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
@@ -185,8 +180,8 @@ test("testing Job on topbar menu", async ({ page }) => {
 });
 
 test("testing Organization on topbar menu", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.loginAsAdmin();
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
   const sidePanel = new SidePanel(page);
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
@@ -201,8 +196,8 @@ test("testing Organization on topbar menu", async ({ page }) => {
 });
 
 test("testing Qualifications on topbar menu", async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.loginAsAdmin();
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
 
   const sidePanel = new SidePanel(page);
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
