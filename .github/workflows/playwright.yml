@@ -8,6 +8,12 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    environment: dev
+    env:
+      ADMIN_USERNAME: ${{vars.ADMIN_USERNAME}}
+      ADMIN_PASSWORD: ${{secrets.ADMIN_PASSWORD}}
+      EMPLOYEE_USERNAME: ${{vars.EMPLOYEE_USERNAME}}
+      EMPLOYEE_PASSWORD: ${{secrets.EMPLOYEE_PASSWORD}}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
