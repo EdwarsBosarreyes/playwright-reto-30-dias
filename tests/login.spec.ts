@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { LoginPage } from "../pageobjects/LoginPage";
 import { SideMenuOption, SidePanel } from "../components/SidePanel";
+import { Navigate } from "../pageobjects/Navigate";
 
 test("Login to hrm as Admin", async ({ page }) => {
-  await page.goto("/web/index.php/dashboard/index");
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
+
   const sidePanel = new SidePanel(page);
 
   await sidePanel.clicOnOption(SideMenuOption.ADMIN);
@@ -19,7 +22,9 @@ test("Invalid login to hrm", async ({ page }) => {
 });
 
 test("Search in the sidebar and clinking", async ({ page }) => {
-  await page.goto("/web/index.php/dashboard/index");
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
+
   const sidePanel = new SidePanel(page);
 
   const randomOption = sidePanel.getRandomMenuOption();
@@ -31,6 +36,8 @@ test("Search in the sidebar and clinking", async ({ page }) => {
 });
 
 test("Login to HRM as Employee", async ({ page }) => {
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
   const sidePanel = new SidePanel(page);
   await expect(sidePanel.getMenuOptionLocator(SideMenuOption.ADMIN)).toBeHidden();
 });
