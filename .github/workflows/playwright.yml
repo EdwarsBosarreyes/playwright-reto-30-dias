@@ -6,10 +6,6 @@ on:
         description: "Campo opcional para filtrar los tests de playwright"
         required: false
         type: string
-      project:
-        description: "Campo opcional para indicar el project"
-        required: false
-        type: string
 jobs:
   test:
     timeout-minutes: 60
@@ -31,8 +27,8 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: |
-          if [ -n "${{github.event.inputs.grep}}" ] && [-n "${{github.event.inputs.project}}"]; then
-            npx playwright test --grep "${{github.event.inputs.grep}}" --project="${{github.event.inputs.project}}" 
+          if [ -n "${{github.event.inputs.grep}}" ]; then
+            npx playwright test --grep "${{github.event.inputs.grep}}" --project="admin" 
           else
             npx playwright test --project="admin"
           fi
