@@ -2,6 +2,14 @@ name: Playwright Tests
 on:
   workflow_dispatch:
     inputs:
+      project:
+        description: "Selecciona el tipo de usuario para ejecutar el proyecto"
+        required: true
+        type: choice
+        default: "admin"
+        options:
+          - admin
+          - employee
       grep:
         description: "Campo opcional para filtrar los tests de playwright"
         required: false
@@ -28,7 +36,7 @@ jobs:
       - name: Run Playwright tests
         run: |
           if [ -n "${{github.event.inputs.grep}}" ]; then
-            npx playwright test --grep "${{github.event.inputs.grep}}" --project="admin" 
+            npx playwright test --grep "${{inputs.grep}}" --project="${{inputs.project}}" 
           else
             npx playwright test --project="admin"
           fi
