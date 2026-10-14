@@ -28,6 +28,8 @@ jobs:
       ADMIN_PASSWORD: ${{secrets.ADMIN_PASSWORD}}
       EMPLOYEE_USERNAME: ${{vars.EMPLOYEE_USERNAME}}
       EMPLOYEE_PASSWORD: ${{secrets.EMPLOYEE_PASSWORD}}
+      PROJECT: ${{ inputs.project || 'admin' }}
+      GREEP: ${{inputs.grep || ''}}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,7 +42,7 @@ jobs:
       - name: Run Playwright tests
         run: |
           if [ -n "${{github.event.inputs.grep}}" ]; then
-            npx playwright test --grep "${{inputs.grep}}" --project="${{inputs.project}}" 
+            npx playwright test --grep "$GREP" --project="$PROJECT" 
           else
             npx playwright test --project="admin"
           fi
