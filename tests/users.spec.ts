@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, request, test } from "@playwright/test";
 import { getRandomElement } from "../src/utils/random";
 import { SideMenuOption, SidePanel } from "../components/SidePanel";
 
@@ -6,6 +6,41 @@ import { Navigate } from "../pageobjects/Navigate";
 import { AddNewUserPage } from "../pageobjects/AddNewUserPage";
 import { UserFactory } from "../factory/UserFactory";
 import { UsersTable } from "../components/UsersTable";
+import { readFile } from "fs/promises";
+import * as path from "path";
+
+test("API Get All the users", async ({ page, request }) => {
+  const authFilePath = path.resolve(process.cwd(), ".auth", "admin.json");
+
+  const authState = JSON.parse(await readFile(authFilePath, "utf-8")) as {
+    cookies?: Array<{ name: string; value: string }>;
+  };
+
+  const orangeHrmCookie = authState.cookies?.find((cookie) => cookie.name === "orangehrm");
+  expect(orangeHrmCookie, "The orangehrm cookie was not found in the saved auth state").toBeTruthy();
+
+  const cookieHeader = `orangehrm=${orangeHrmCookie?.value}`;
+
+  const response = await request.get(
+    "https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=50&offset=0&sortField=u.userName&sortOrder=ASC",
+    {
+      headers: {
+        Cookie: cookieHeader,
+        Accept: "application/json",
+      },
+    },
+  );
+
+  if (!response.ok()) {
+    console.log("Status Code:", response.status());
+    console.log("Response Body:", await response.text());
+  }
+
+  expect(response.ok()).toBeTruthy();
+
+  const bodyJson = await response.json();
+  console.log(JSON.stringify(bodyJson));
+});
 
 test("Get all the usernames registered @users", async ({ page }) => {
   const navigate = new Navigate(page);
@@ -16,6 +51,26 @@ test("Get all the usernames registered @users", async ({ page }) => {
 
   const usersTable = new UsersTable(page);
   await usersTable.getAllUsernames();
+});
+
+test("API Get All the users with invalid cookie should fail", async ({ request }) => {
+  const invalidCookieHeader = "orangehrm=cookie_falsa_o_caducada_12345";
+
+  const response = await request.get(
+    "https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=50&offset=0&sortField=u.userName&sortOrder=ASC",
+    {
+      headers: {
+        Cookie: invalidCookieHeader,
+        Accept: "application/json",
+      },
+    },
+  );
+
+  expect(response.ok()).toBeFalsy();
+  expect(response.status()).toBe(401);
+
+  const bodyJson = await response.json();
+  console.log("Respuesta de error del servidor:", JSON.stringify(bodyJson));
 });
 
 /* test("Select specific user for edition @users", async ({ page }) => {
