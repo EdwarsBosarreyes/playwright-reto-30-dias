@@ -6,231 +6,16 @@ import { Navigate } from "../pageobjects/Navigate";
 import { AddNewUserPage } from "../pageobjects/AddNewUserPage";
 import { UserFactory } from "../factory/UserFactory";
 import { UsersTable } from "../components/UsersTable";
-import { readFile } from "fs/promises";
-import * as path from "path";
+import { UsersApiClient } from "../api/UsersApiClient";
 
-test("API Get All the users", async ({ page, request }) => {
-  const authFilePath = path.resolve(process.cwd(), ".auth", "admin.json");
-
-  const authState = JSON.parse(await readFile(authFilePath, "utf-8")) as {
-    cookies?: Array<{ name: string; value: string }>;
-  };
-
-  const orangeHrmCookie = authState.cookies?.find((cookie) => cookie.name === "orangehrm");
-  expect(orangeHrmCookie, "The orangehrm cookie was not found in the saved auth state").toBeTruthy();
-
-  const cookieHeader = `orangehrm=${orangeHrmCookie?.value}`;
-
-  const response = await request.get(
-    "https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users?limit=50&offset=0&sortField=u.userName&sortOrder=ASC",
-    {
-      headers: {
-        Cookie: cookieHeader,
-        Accept: "application/json",
-      },
-    },
-  );
-
-  if (!response.ok()) {
-    console.log("Status Code:", response.status());
-    console.log("Response Body:", await response.text());
-  }
+test("API Get All the users", async ({ request }) => {
+  const apiClient = await UsersApiClient.fromSavedAuthState(request);
+  const response = await apiClient.getUsers();
 
   expect(response.ok()).toBeTruthy();
 
   const bodyJson = await response.json();
   console.log(JSON.stringify(bodyJson));
-});
-
-test("API Add a New users", async ({ page, request }) => {
-  const authFilePath = path.resolve(process.cwd(), ".auth", "admin.json");
-
-  const authState = JSON.parse(await readFile(authFilePath, "utf-8")) as {
-    cookies?: Array<{ name: string; value: string }>;
-  };
-
-  const username = "user-" + crypto.randomUUID().slice(0, 30);
-  const password = "P4ssw0rd.11";
-
-  const orangeHrmCookie = authState.cookies?.find((cookie) => cookie.name === "orangehrm");
-  expect(orangeHrmCookie, "The orangehrm cookie was not found in the saved auth state").toBeTruthy();
-
-  const cookieHeader = `orangehrm=${orangeHrmCookie?.value}`;
-
-  const response = await request.post("https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users", {
-    headers: {
-      Cookie: cookieHeader,
-      Accept: "application/json",
-    },
-    data: { username: username, password: password, status: true, userRoleId: 1, empNumber: 7 },
-  });
-
-  if (!response.ok()) {
-    console.log("Status Code:", response.status());
-    console.log("Response Body:", await response.text());
-  }
-
-  expect(response.ok()).toBeTruthy();
-
-  const bodyJson = await response.json();
-  console.log(JSON.stringify(bodyJson));
-});
-
-test("API Add a New users already exists", async ({ page, request }) => {
-  const authFilePath = path.resolve(process.cwd(), ".auth", "admin.json");
-
-  const authState = JSON.parse(await readFile(authFilePath, "utf-8")) as {
-    cookies?: Array<{ name: string; value: string }>;
-  };
-
-  const username = "user eea93445-1d89-4010-b0f5-10a3f2";
-  const password = "P4ssw0rd.11";
-
-  const orangeHrmCookie = authState.cookies?.find((cookie) => cookie.name === "orangehrm");
-  expect(orangeHrmCookie, "The orangehrm cookie was not found in the saved auth state").toBeTruthy();
-
-  const cookieHeader = `orangehrm=${orangeHrmCookie?.value}`;
-
-  const response = await request.post("https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users", {
-    headers: {
-      Cookie: cookieHeader,
-      Accept: "application/json",
-    },
-    data: { username: username, password: password, status: true, userRoleId: 1, empNumber: 7 },
-  });
-
-  if (response.status() !== 422) {
-    console.log("Status Code:", response.status());
-    console.log("Response Body:", await response.text());
-  }
-
-  expect(response.status()).toBe(422);
-
-  const bodyJson = await response.json();
-  console.log(JSON.stringify(bodyJson));
-});
-
-test("Get all the usernames registered @users", async ({ page }) => {
-  const navigate = new Navigate(page);
-  await navigate.toDashboard();
-
-  const sidePanel = new SidePanel(page);
-  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
-
-  const usersTable = new UsersTable(page);
-  await usersTable.getAllUsernames();
-});
-
-test("API Delete a user", async ({ page, request }) => {
-  const authFilePath = path.resolve(process.cwd(), ".auth", "admin.json");
-
-  const authState = JSON.parse(await readFile(authFilePath, "utf-8")) as {
-    cookies?: Array<{ name: string; value: string }>;
-  };
-
-  const username = "user-" + crypto.randomUUID().slice(0, 30);
-  const password = "P4ssw0rd.11";
-
-  const orangeHrmCookie = authState.cookies?.find((cookie) => cookie.name === "orangehrm");
-  expect(orangeHrmCookie, "The orangehrm cookie was not found in the saved auth state").toBeTruthy();
-
-  const cookieHeader = `orangehrm=${orangeHrmCookie?.value}`;
-
-  const response = await request.post("https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users", {
-    headers: {
-      Cookie: cookieHeader,
-      Accept: "application/json",
-    },
-    data: { username: username, password: password, status: true, userRoleId: 1, empNumber: 7 },
-  });
-
-  if (!response.ok()) {
-    console.log("Status Code:", response.status());
-    console.log("Response Body:", await response.text());
-  }
-
-  expect(response.ok()).toBeTruthy();
-
-  const bodyJson = await response.json();
-  console.log(JSON.stringify(bodyJson));
-
-  const userId = await bodyJson.data.id;
-  console.log(`User ID: ${userId}`);
-
-  const userDeletionResponse = await request.delete(
-    `https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users`,
-    {
-      headers: {
-        Cookie: cookieHeader,
-        Accept: "application/json",
-      },
-      data: {
-        ids: [userId],
-      },
-    },
-  );
-
-  expect(userDeletionResponse.ok()).toBeTruthy();
-
-  const userDeletionReponseJson = await userDeletionResponse.json();
-  console.log(JSON.stringify(userDeletionReponseJson));
-});
-
-test("API Delete multiple users", async ({ page, request }) => {
-  const authFilePath = path.resolve(process.cwd(), ".auth", "admin.json");
-
-  const authState = JSON.parse(await readFile(authFilePath, "utf-8")) as {
-    cookies?: Array<{ name: string; value: string }>;
-  };
-
-  const orangeHrmCookie = authState.cookies?.find((cookie) => cookie.name === "orangehrm");
-  expect(orangeHrmCookie, "The orangehrm cookie was not found in the saved auth state").toBeTruthy();
-
-  const cookieHeader = `orangehrm=${orangeHrmCookie?.value}`;
-  const apiEndpoint = "https://opensource-demo.orangehrmlive.com/web/index.php/api/v2/admin/users";
-
-  const createUser = async () => {
-    const username = "user-" + crypto.randomUUID().slice(0, 30);
-    const password = "P4ssw0rd." + String(Math.floor(Math.random() * 100) + 1);
-
-    const response = await request.post(apiEndpoint, {
-      headers: {
-        Cookie: cookieHeader,
-        Accept: "application/json",
-      },
-      data: { username: username, password: password, status: true, userRoleId: 1, empNumber: 7 },
-    });
-
-    if (!response.ok()) {
-      console.log("Status Code:", response.status());
-      console.log("Response Body:", await response.text());
-    }
-
-    expect(response.ok()).toBeTruthy();
-    const bodyJson = await response.json();
-    const userId = await bodyJson.data.id;
-    console.log(`Created User: ${username} with password: ${password} (ID: ${userId})`);
-    return userId;
-  };
-
-  const userIds = [];
-  userIds.push(await createUser());
-  userIds.push(await createUser());
-
-  const userDeletionResponse = await request.delete(apiEndpoint, {
-    headers: {
-      Cookie: cookieHeader,
-      Accept: "application/json",
-    },
-    data: {
-      ids: userIds,
-    },
-  });
-
-  expect(userDeletionResponse.ok()).toBeTruthy();
-
-  const userDeletionReponseJson = await userDeletionResponse.json();
-  console.log(JSON.stringify(userDeletionReponseJson));
 });
 
 test("API Get All the users with invalid cookie should fail", async ({ request }) => {
@@ -251,6 +36,165 @@ test("API Get All the users with invalid cookie should fail", async ({ request }
 
   const bodyJson = await response.json();
   console.log("Respuesta de error del servidor:", JSON.stringify(bodyJson));
+});
+
+test("API Add a New users", async ({ request }) => {
+  const apiClient = await UsersApiClient.fromSavedAuthState(request);
+
+  const username = "user-" + crypto.randomUUID().slice(0, 30);
+  const password = "P4ssw0rd.11";
+
+  const newUserPayload = {
+    username: username,
+    password: password,
+    status: true,
+    userRoleId: 1,
+    empNumber: 7,
+  };
+  console.log(newUserPayload);
+
+  const response = await apiClient.createUser(newUserPayload);
+
+  if (!response.ok()) {
+    console.log("Status Code:", response.status());
+    console.log("Response Body:", await response.text());
+  }
+
+  expect(response.ok()).toBeTruthy();
+
+  const bodyJson = await response.json();
+  console.log(JSON.stringify(bodyJson));
+});
+
+test("API Add a New users already exists", async ({ page, request }) => {
+  const apiClient = await UsersApiClient.fromSavedAuthState(request);
+
+  const username = "user-" + crypto.randomUUID().slice(0, 30);
+  const password = "P4ssw0rd.11";
+
+  const newUserPayload = {
+    username: username,
+    password: password,
+    status: true,
+    userRoleId: 1,
+    empNumber: 7,
+  };
+  console.log(newUserPayload);
+
+  const response = await apiClient.createUser(newUserPayload);
+
+  if (!response.ok()) {
+    console.log("Status Code:", response.status());
+    console.log("Response Body:", await response.text());
+  }
+
+  expect(response.ok()).toBeTruthy();
+
+  const bodyJson = await response.json();
+  console.log(JSON.stringify(bodyJson));
+
+  if (response.status() !== 422) {
+    console.log("Status Code:", response.status());
+    console.log("Response Body:", await response.text());
+  }
+
+  const responseDuplicateUser = await apiClient.createUser(newUserPayload);
+
+  expect(responseDuplicateUser.status()).toBe(422);
+
+  const bodyJsonDuplicate = await responseDuplicateUser.json();
+  console.log(JSON.stringify(bodyJsonDuplicate));
+});
+
+test("API Delete a user", async ({ request }) => {
+  const apiClient = await UsersApiClient.fromSavedAuthState(request);
+
+  const username = "user-" + crypto.randomUUID().slice(0, 30);
+  const password = "P4ssw0rd.11";
+
+  const newUserPayload = {
+    username: username,
+    password: password,
+    status: true,
+    userRoleId: 1,
+    empNumber: 7,
+  };
+  console.log(newUserPayload);
+
+  const response = await apiClient.createUser(newUserPayload);
+
+  if (!response.ok()) {
+    console.log("Status Code:", response.status());
+    console.log("Response Body:", await response.text());
+  }
+
+  expect(response.ok()).toBeTruthy();
+
+  const bodyJson = await response.json();
+  console.log(JSON.stringify(bodyJson));
+
+  const userId = await bodyJson.data.id;
+  console.log(`User ID: ${userId}`);
+
+  const userDeletionResponse = await apiClient.deleteUser(userId);
+
+  expect(userDeletionResponse.ok()).toBeTruthy();
+
+  const userDeletionReponseJson = await userDeletionResponse.json();
+  console.log(JSON.stringify(userDeletionReponseJson));
+});
+
+test("API Delete multiple users", async ({ request }) => {
+  const apiClient = await UsersApiClient.fromSavedAuthState(request);
+
+  const createUser = async () => {
+    const username = "user-" + crypto.randomUUID().slice(0, 30);
+    const password = "P4ssw0rd." + String(Math.floor(Math.random() * 100) + 1);
+
+    const newUserPayload = {
+      username: username,
+      password: password,
+      status: true,
+      userRoleId: 1,
+      empNumber: 7,
+    };
+    console.log(newUserPayload);
+
+    const response = await apiClient.createUser(newUserPayload);
+
+    if (!response.ok()) {
+      console.log("Status Code:", response.status());
+      console.log("Response Body:", await response.text());
+    }
+
+    expect(response.ok()).toBeTruthy();
+    const bodyJson = await response.json();
+    const userId = await bodyJson.data.id;
+    console.log(`Created User: ${username} with password: ${password} (ID: ${userId})`);
+    return userId;
+  };
+
+  const userIds = [];
+  userIds.push(await createUser());
+  userIds.push(await createUser());
+
+  const userDeletionResponse = await apiClient.deleteUser(userIds);
+
+  expect(userDeletionResponse.ok()).toBeTruthy();
+
+  const userDeletionReponseJson = await userDeletionResponse.json();
+  console.log(JSON.stringify(userDeletionReponseJson));
+});
+
+test("Get all the usernames registered @users", async ({ page }) => {
+  const navigate = new Navigate(page);
+  await navigate.toDashboard();
+
+  const sidePanel = new SidePanel(page);
+  await sidePanel.clicOnOption(SideMenuOption.ADMIN);
+
+  const usersTable = new UsersTable(page);
+  await usersTable.getAllUsernames();
 });
 
 /* test("Select specific user for edition @users", async ({ page }) => {
